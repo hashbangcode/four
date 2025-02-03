@@ -1,23 +1,9 @@
-// Set up variables for the memory game.
+// Set up variables for the fox game.
 var loose = false;
 var foxtimeout = undefined;
 var playercoordinates = {};
 var foodcoordinates = {};
 var foxcoordinates = {};
-
-let shapes = [];
-shapes[0] = [
-    [0, 0, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, 0, 1],
-    [0, 0, 0, 0],
-];
-shapes[1] = [
-    [0, 0, 0, 0],
-    [1, 1, 1, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-];
 
 // Set the game up.
 function setupGame(boxes) {
@@ -152,7 +138,6 @@ function moveFox() {
         foxcoordinates.column--;
         return;
     }
-
 }
 
 // The game loop
