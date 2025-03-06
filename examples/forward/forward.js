@@ -30,13 +30,9 @@ shapes[3] = [
     0,
 ];
 
-// Set the game up.
-function setupGame(boxes) {
-    if (boxes.length === 0) {
-        // The boxes haven't been set yet, so do this.
-        drawGrid(true);
-    }
-}
+var wallIsActive = false;
+var wall = [];
+var wallCoordinates = undefined;
 
 function placePlayer(boxes) {
     playercoordinates = { column: 0, row: 2 };
@@ -45,13 +41,8 @@ function placePlayer(boxes) {
     }
 }
 
-var wallIsActive = false;
-var wall = [];
-var wallCoordinates = undefined;
-
 function moveWall() {
     wallTimeout = setTimeout(moveWall, Math.max(1000 - (score * 100), 250));
-    console.log(wallCoordinates);
     if (wallIsActive) {
         if (wallCoordinates == -1) {
             wallIsActive = false;
@@ -87,31 +78,11 @@ function userActionKeyPress(direction) {
     }
 }
 
-// Load in the canvas element and set up the game.
-window.onload = function () {
-    canvas = document.getElementById('gc');
-    ctx = canvas.getContext('2d');
-
-    width = canvas.width;
-    height = canvas.height;
-
-    addKeyListener();
-    setupGame(boxes);
-
+function init() {
     placePlayer(boxes);
-
-    // Run game loop.
-    setInterval(gameLoop, 100);
 }
 
-// The game loop
-// In this case we are checking for a win condition and reacting to that.
-function gameLoop() {
-    if (frames.length > 0) {
-        // Don't do anything whilst we are animating.
-        return;
-    }
-    drawGrid();
+function update() {
     if (loose === true) {
         // Crashed!
         // Flush the screen.
@@ -121,25 +92,25 @@ function gameLoop() {
         // Reset some variables.
         score = 0;
         // Set the game up again.
-        setupGame(boxes);
         placePlayer(boxes);
 
         // Turn off the win state.
         loose = false;
     }
-    else {
-        cls();
-        for (let b = 0; b < boxes.length; b++) {
-            if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-                fillBox(boxes[b], 'black');
-            }
-            if (boxes[b].column === wallCoordinates) {
-                for (let wallpart = 0; wallpart < wall.length; wallpart++) {
-                    if (wall[wallpart] == 1 && boxes[b].row == wallpart) {
-                        fillBox(boxes[b], 'green');
-                        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-                            loose = true;
-                        }
+}
+
+function draw() {
+    cls();
+    for (let b = 0; b < boxes.length; b++) {
+        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
+            fillBox(boxes[b], 'black');
+        }
+        if (boxes[b].column === wallCoordinates) {
+            for (let wallpart = 0; wallpart < wall.length; wallpart++) {
+                if (wall[wallpart] == 1 && boxes[b].row == wallpart) {
+                    fillBox(boxes[b], 'green');
+                    if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
+                        loose = true;
                     }
                 }
             }

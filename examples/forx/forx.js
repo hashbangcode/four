@@ -5,14 +5,6 @@ var playercoordinates = {};
 var foodcoordinates = {};
 var foxcoordinates = {};
 
-// Set the game up.
-function setupGame(boxes) {
-    if (boxes.length === 0) {
-        // The boxes haven't been set yet, so do this.
-        drawGrid(true);
-    }
-}
-
 function placeFood(boxes) {
     while (true) {
         let randomIndex = Math.floor(Math.random() * boxes.length);
@@ -65,7 +57,6 @@ function userActionKeyPress(direction) {
             fillBox(boxes[b], 'white');
         }
     }
-    drawGrid();
 
     switch (direction) {
         case KEYPRESS_LEFT:
@@ -94,25 +85,6 @@ function userActionKeyPress(direction) {
     }
 }
 
-// Load in the canvas element and set up the game.
-window.onload = function () {
-    canvas = document.getElementById('gc');
-    ctx = canvas.getContext('2d');
-
-    width = canvas.width;
-    height = canvas.height;
-
-    addKeyListener();
-    setupGame(boxes);
-
-    placePlayer(boxes);
-    placeFood(boxes);
-    placeFox(boxes);
-
-    // Run game loop.
-    setInterval(gameLoop, 100);
-}
-
 function moveFox() {
     foxtimeout = setTimeout(moveFox, Math.max(2000 - (score * 100), 250));
     for (let b = 0; b < boxes.length; b++) {
@@ -120,7 +92,6 @@ function moveFox() {
             fillBox(boxes[b], 'white');
         }
     }
-    drawGrid();
 
     if (foxcoordinates.row < playercoordinates.row) {
         foxcoordinates.row++;
@@ -140,14 +111,13 @@ function moveFox() {
     }
 }
 
-// The game loop
-// In this case we are checking for a win condition and reacting to that.
-function gameLoop() {
-    if (frames.length > 0) {
-        // Don't do anything whilst we are animating.
-        return;
-    }
+function init() {
+    placePlayer(boxes);
+    placeFood(boxes);
+    placeFox(boxes);
+}
 
+function update() {
     if (loose === true) {
         // Crashed!
         // Reset the fox timeout.
@@ -160,8 +130,6 @@ function gameLoop() {
         displayScore(score);
         // Reset some variables.
         score = 0;
-        // Set the game up again.
-        setupGame(boxes);
 
         placePlayer(boxes);
         placeFood(boxes);
@@ -179,16 +147,19 @@ function gameLoop() {
             placeFood(boxes);
             score++;
         }
-        for (let b = 0; b < boxes.length; b++) {
-            if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-                fillBox(boxes[b], 'black');
-            }
-            if (boxes[b].column === foodcoordinates.column && boxes[b].row === foodcoordinates.row) {
-                fillBox(boxes[b], 'green');
-            }
-            if (boxes[b].column === foxcoordinates.column && boxes[b].row === foxcoordinates.row) {
-                fillBox(boxes[b], 'red');
-            }
+    }
+}
+
+function draw() {
+    for (let b = 0; b < boxes.length; b++) {
+        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
+            fillBox(boxes[b], 'black');
+        }
+        if (boxes[b].column === foodcoordinates.column && boxes[b].row === foodcoordinates.row) {
+            fillBox(boxes[b], 'green');
+        }
+        if (boxes[b].column === foxcoordinates.column && boxes[b].row === foxcoordinates.row) {
+            fillBox(boxes[b], 'red');
         }
     }
 }

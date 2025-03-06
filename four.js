@@ -136,7 +136,9 @@ function canvasClick(event) {
             x > element.x &&
             x < element.x + element.width
         ) {
-            userActionClick(element);
+            if (typeof userActionClick === 'function') {
+                userActionClick(element);
+            }
             return false;
         }
     });
@@ -156,6 +158,9 @@ const KEYPRESS_LEFT = 'left';
 const KEYPRESS_RIGHT = 'right';
 
 function keyPress(evt) {
+    if (typeof userActionKeyPress !== 'function') {
+        return;
+    }
     switch (evt.keyCode) {
         case 37:
             userActionKeyPress(KEYPRESS_LEFT);
@@ -273,5 +278,35 @@ function fillBox(box, colour) {
 // Clear the screen and redraw the grid.
 function cls() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+   drawGrid();
+}
+
+// Load in the canvas element and set up the game.
+window.onload = function () {
+    canvas = document.getElementById('four');
+    ctx = canvas.getContext('2d');
+  
+    width = canvas.width;
+    height = canvas.height;
+  
+    addClickListener();
+    addKeyListener();
+  
+    drawGrid(true);
+
+    if (typeof init === "function") {
+        init();
+    }
+
+    setInterval(gameLoop, 100);
+}
+
+// The game loop, where we define our custom functions.
+function gameLoop() {
+    update();
+    if (frames.length === 0) {
+        draw();
+    }
+
     drawGrid();
 }
