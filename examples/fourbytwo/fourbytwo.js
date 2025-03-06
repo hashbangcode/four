@@ -5,36 +5,6 @@ var score = 0;
 var selectedBoxes = [];
 var foundPairs = [];
 
-// Set the game up.
-function setupGame(boxes) {
-  if (boxes.length === 0) {
-    // The boxes haven't been set yet, so do this.
-    drawGrid(true);
-  }
-
-  let colours = [
-    'blue',
-    'cyan',
-    'darkorange',
-    'red',
-    'black',
-    'green',
-    'purple',
-    'yellow',
-  ];
-
-  colours = colours.slice(0, boxes.length / 2);
-  colours = colours.map(function (item) {
-    return [item, item];
-  }).reduce(function (a, b) { return a.concat(b) });
-
-  shuffle(colours);
-
-  boxes.forEach(function (element) {
-    element.colour = colours.shift();
-  });
-}
-
 // Define a user action against a given box.
 function userActionClick(box) {
   for (let i = 0; i < foundPairs.length; i++) {
@@ -87,23 +57,36 @@ function userActionClick(box) {
 }
 
 // Load in the canvas element and set up the game.
-window.onload = function () {
-  canvas = document.getElementById('gc');
-  ctx = canvas.getContext('2d');
+function randomiseColours() {
+  let colours = [
+    'blue',
+    'cyan',
+    'darkorange',
+    'red',
+    'black',
+    'green',
+    'purple',
+    'yellow',
+  ];
 
-  width = canvas.width;
-  height = canvas.height;
+  colours = colours.slice(0, boxes.length / 2);
+  colours = colours.map(function (item) {
+    return [item, item];
+  }).reduce(function (a, b) { return a.concat(b) });
 
-  addClickListener();
-  setupGame(boxes);
+  shuffle(colours);
 
-  // Run game loop.
-  setInterval(gameLoop, 100);
+  boxes.forEach(function (element) {
+    element.colour = colours.shift();
+  });
 }
 
-// The game loop
-// In this case we are checking for a win condition and reacting to that.
-function gameLoop() {
+
+function init() {
+  randomiseColours();
+}
+
+function update() {
   if (win === true) {
     // We have a winner!
     // flush the screen.
@@ -114,10 +97,15 @@ function gameLoop() {
     score = 0;
     selectedBoxes = [];
     foundPairs = [];
-    // Set the game up again.
-    setupGame(boxes);
+
+    // Reset the game grid.
+    randomiseColours();
+
     // Turn off the win state.
     win = false;
   }
 }
-   
+
+function draw() {
+
+}
