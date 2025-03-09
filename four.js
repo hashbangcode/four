@@ -7,8 +7,9 @@ var height;
 const gridMaxX = 4;
 const gridMaxY = 4;
 
-// The boxes array stores information about the grid.
-var boxes = [];
+var grid = [];
+
+var gameloopId = undefined;
 
 // Define animation settings.
 var frameCounter = 0;
@@ -85,35 +86,39 @@ numbers[9] = [
     [0, 0, 0, 1],
 ];
 
-// Draw the grid.
-function drawGrid(createBoxes = false) {
-    let row = 0;
-    let column = 0;
+// Set up the game grid.
+function setupGrid() {
+    grid = new Array();
     for (let i = 0; i < gridMaxX; i++) {
+        grid[i] = new Array();
         column = 0;
-        let y = row * (width / gridMaxY);
-
+        let y = i * (width / gridMaxY);
         for (let j = 0; j < gridMaxY; j++) {
-            let x = column * (width / gridMaxY);
+            let x = j * (width / gridMaxY);
             let rectWidth = width / gridMaxY;
             let rectHeight = height / gridMaxY;
-
-            ctx.strokeRect(x, y, rectWidth, rectHeight);
-
-            if (createBoxes === true) {
-                box = {
-                    column: column,
-                    row: row,
-                    x: x,
-                    y: y,
-                    width: rectWidth,
-                    height: rectHeight
-                }
-                boxes.push(box);
-            }
-            column++;
+            grid[i][j] = {
+                column: j,
+                row: i,
+                x: x,
+                y: y,
+                width: rectWidth,
+                height: rectHeight
+            };
         }
-        row++;
+    }
+}
+
+// Draw the grid.
+function drawGrid() {
+    for (let i = 0; i < gridMaxX; i++) {
+        let y = i * (width / gridMaxY);
+        for (let j = 0; j < gridMaxY; j++) {
+            let x = j * (width / gridMaxY);
+            let rectWidth = width / gridMaxY;
+            let rectHeight = height / gridMaxY;
+            ctx.strokeRect(x, y, rectWidth, rectHeight);
+        }
     }
 }
 
@@ -129,19 +134,23 @@ function canvasClick(event) {
         y = event.clientY - rect.top;
 
     // Collision detection between clicked offset and element.
-    boxes.some(function (element) {
-        if (
-            y > element.y &&
-            y < element.y + element.height &&
-            x > element.x &&
-            x < element.x + element.width
-        ) {
-            if (typeof userActionClick === 'function') {
-                userActionClick(element);
+
+    for (let i = 0; i < gridMaxX; i++) {
+        for (let j = 0; j < gridMaxY; j++) {
+            let element = grid[i][j];
+            if (
+                y > element.y &&
+                y < element.y + element.height &&
+                x > element.x &&
+                x < element.x + element.width
+            ) {
+                if (typeof userActionClick === 'function') {
+                    userActionClick(element);
+                }
+                return false;
             }
-            return false;
         }
-    });
+    }
 }
 
 function addKeyListener() {
@@ -230,6 +239,12 @@ function displayScore(score) {
     setTimeout(animateScore, 250);
 }
 
+function randomElement() {
+    let randomX = Math.floor(Math.random() * gridMaxX);
+    let randomY = Math.floor(Math.random() * gridMaxY);
+    return grid[randomX][randomY];
+}
+
 // Animate the score.
 function animateScore() {
     cls();
@@ -244,11 +259,9 @@ function animateScore() {
     for (let i = 0; i < frames[frameCounter].length; i++) {
         for (let j = 0; j < frames[frameCounter][i].length; j++) {
             if (frames[frameCounter][i][j] === 1) {
-                for (let b = 0; b < boxes.length; b++) {
-                    if (boxes[b].column === i && boxes[b].row === j) {
-                        fillBox(boxes[b], 'black');
-                    }
-                }
+                // Yes, we use j and i backwards here as we want to 
+                // print the text scrolling across, rather than up.
+                fillBox(grid[j][i], 'black');
             }
         }
     }
@@ -277,8 +290,8 @@ function fillBox(box, colour) {
 
 // Clear the screen and redraw the grid.
 function cls() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-   drawGrid();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawGrid();
 }
 
 // Load in the canvas element and set up the game.
@@ -292,20 +305,27 @@ window.onload = function () {
     addClickListener();
     addKeyListener();
   
-    drawGrid(true);
+    setupGrid();
+    drawGrid();
 
     if (typeof init === "function") {
         init();
     }
 
-    setInterval(gameLoop, 100);
+    gameloopId = setInterval(gameLoop, 100);
+}
+
+function wait(seconds) {
+    clearInterval(gameloopId);
+    gameloopId = setInterval(gameLoop, seconds);
 }
 
 // The game loop, where we define our custom functions.
 function gameLoop() {
-    update();
+
     if (frames.length === 0) {
         draw();
+        update();
     }
 
     drawGrid();
