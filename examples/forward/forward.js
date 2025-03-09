@@ -34,7 +34,7 @@ var wallIsActive = false;
 var wall = [];
 var wallCoordinates = undefined;
 
-function placePlayer(boxes) {
+function placePlayer() {
     playercoordinates = { column: 0, row: 2 };
     if (typeof wallTimeout !== "number") {
         wallTimeout = setTimeout(moveWall, 1000);
@@ -59,11 +59,6 @@ function moveWall() {
 }
 
 function userActionKeyPress(direction) {
-    for (let b = 0; b < boxes.length; b++) {
-        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-            fillBox(boxes[b], 'white');
-        }
-    }
     switch (direction) {
         case KEYPRESS_UP:
             if (playercoordinates.row >= 1) {
@@ -79,7 +74,7 @@ function userActionKeyPress(direction) {
 }
 
 function init() {
-    placePlayer(boxes);
+    placePlayer();
 }
 
 function update() {
@@ -92,25 +87,43 @@ function update() {
         // Reset some variables.
         score = 0;
         // Set the game up again.
-        placePlayer(boxes);
+        placePlayer();
 
         // Turn off the win state.
         loose = false;
+        return;
+    }
+
+    for (let i = 0; i < gridMaxX; i++) {
+        for (let j = 0; j < gridMaxY; j++) {
+            let element = grid[i][j];
+            if (element.column === wallCoordinates) {
+                for (let wallpart = 0; wallpart < wall.length; wallpart++) {
+                    if (wall[wallpart] === 1 && element.row == wallpart) {
+                        if (element.column === playercoordinates.column && element.row === playercoordinates.row) {
+                            loose = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 function draw() {
     cls();
-    for (let b = 0; b < boxes.length; b++) {
-        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-            fillBox(boxes[b], 'black');
-        }
-        if (boxes[b].column === wallCoordinates) {
-            for (let wallpart = 0; wallpart < wall.length; wallpart++) {
-                if (wall[wallpart] == 1 && boxes[b].row == wallpart) {
-                    fillBox(boxes[b], 'green');
-                    if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-                        loose = true;
+
+    for (let i = 0; i < gridMaxX; i++) {
+        for (let j = 0; j < gridMaxY; j++) {
+            let element = grid[i][j];
+            if (element.column === playercoordinates.column && element.row === playercoordinates.row) {
+                fillBox(element, 'black');
+            }
+            if (element.column === wallCoordinates) {
+                for (let wallpart = 0; wallpart < wall.length; wallpart++) {
+                    if (wall[wallpart] === 1 && element.row == wallpart) {
+                        fillBox(element, 'green');
                     }
                 }
             }

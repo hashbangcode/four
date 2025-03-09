@@ -5,58 +5,53 @@ var playercoordinates = {};
 var foodcoordinates = {};
 var foxcoordinates = {};
 
-function placeFood(boxes) {
+function placeFood() {
     while (true) {
-        let randomIndex = Math.floor(Math.random() * boxes.length);
-        if (boxes[randomIndex].column === playercoordinates.column && boxes[randomIndex].row === playercoordinates.row) {
+        let random = randomElement();
+        if (random.column === playercoordinates.column && random.row === playercoordinates.row) {
             continue;
         }
-        if (boxes[randomIndex].column === foxcoordinates.column && boxes[randomIndex].row === foxcoordinates.row) {
+        if (random.column === foxcoordinates.column && random.row === foxcoordinates.row) {
             continue;
         }
-        foodcoordinates = { column: boxes[randomIndex].column, row: boxes[randomIndex].row };
+        foodcoordinates = { column: random.column, row: random.row };
         return;
     }
 }
 
-function placeFox(boxes) {
+function placeFox(gamegrid) {
     while (true) {
-        let randomIndex = Math.floor(Math.random() * boxes.length);
-        if (boxes[randomIndex].column === playercoordinates.column && boxes[randomIndex].row === playercoordinates.row) {
+        let random = randomElement();
+        if (random.column === playercoordinates.column && random.row === playercoordinates.row) {
             continue;
         }
-        if (boxes[randomIndex].column === foodcoordinates.column && boxes[randomIndex].row === foodcoordinates.row) {
+        if (random.column === foodcoordinates.column && random.row === foodcoordinates.row) {
             continue;
         }
-        if (boxes[randomIndex].column === (playercoordinates.column + 1) || boxes[randomIndex].column === (playercoordinates.column - 1)
-            && (boxes[randomIndex].row === (playercoordinates.row + 1) || boxes[randomIndex].row === (playercoordinates.row - 1))) {
+        if (random.column === (playercoordinates.column + 1) || random.column === (playercoordinates.column - 1)
+            && (random.row === (playercoordinates.row + 1) || random.row === (playercoordinates.row - 1))) {
             continue;
         }
-        foxcoordinates = { column: boxes[randomIndex].column, row: boxes[randomIndex].row };
+        foxcoordinates = { column: random.column, row: random.row };
         return;
     }
 }
 
-function placePlayer(boxes) {
+function placePlayer() {
     while (true) {
-        let randomIndex = Math.floor(Math.random() * boxes.length);
-        if (boxes[randomIndex].column === foxcoordinates.column && boxes[randomIndex].row === foxcoordinates.row) {
+        let random = randomElement();
+        if (random.column === foxcoordinates.column && random.row === foxcoordinates.row) {
             continue;
         }
-        if (boxes[randomIndex].column === foodcoordinates.column && boxes[randomIndex].row === foodcoordinates.row) {
+        if (random.column === foodcoordinates.column && random.row === foodcoordinates.row) {
             continue;
         }
-        playercoordinates = { column: boxes[randomIndex].column, row: boxes[randomIndex].row };
+        playercoordinates = { column: random.column, row: random.row };
         return;
     }
 }
 
 function userActionKeyPress(direction) {
-    for (let b = 0; b < boxes.length; b++) {
-        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-            fillBox(boxes[b], 'white');
-        }
-    }
 
     switch (direction) {
         case KEYPRESS_LEFT:
@@ -87,11 +82,6 @@ function userActionKeyPress(direction) {
 
 function moveFox() {
     foxtimeout = setTimeout(moveFox, Math.max(2000 - (score * 100), 250));
-    for (let b = 0; b < boxes.length; b++) {
-        if (boxes[b].column === foxcoordinates.column && boxes[b].row === foxcoordinates.row) {
-            fillBox(boxes[b], 'white');
-        }
-    }
 
     if (foxcoordinates.row < playercoordinates.row) {
         foxcoordinates.row++;
@@ -112,9 +102,9 @@ function moveFox() {
 }
 
 function init() {
-    placePlayer(boxes);
-    placeFood(boxes);
-    placeFox(boxes);
+    placePlayer();
+    placeFood();
+    placeFox();
 }
 
 function update() {
@@ -131,35 +121,40 @@ function update() {
         // Reset some variables.
         score = 0;
 
-        placePlayer(boxes);
-        placeFood(boxes);
-        placeFox(boxes);
+        placePlayer();
+        placeFood();
+        placeFox();
 
         // Turn off the win state.
         loose = false;
+        return;
     }
-    else {
-        if (foxcoordinates.column === playercoordinates.column && foxcoordinates.row === playercoordinates.row) {
-            loose = true;
-            return;
-        }
-        if (foodcoordinates.column === playercoordinates.column && foodcoordinates.row === playercoordinates.row) {
-            placeFood(boxes);
-            score++;
-        }
+
+    if (foxcoordinates.column === playercoordinates.column && foxcoordinates.row === playercoordinates.row) {
+        loose = true;
+        return;
     }
+    if (foodcoordinates.column === playercoordinates.column && foodcoordinates.row === playercoordinates.row) {
+        placeFood();
+        score++;
+    }
+    
 }
 
 function draw() {
-    for (let b = 0; b < boxes.length; b++) {
-        if (boxes[b].column === playercoordinates.column && boxes[b].row === playercoordinates.row) {
-            fillBox(boxes[b], 'black');
-        }
-        if (boxes[b].column === foodcoordinates.column && boxes[b].row === foodcoordinates.row) {
-            fillBox(boxes[b], 'green');
-        }
-        if (boxes[b].column === foxcoordinates.column && boxes[b].row === foxcoordinates.row) {
-            fillBox(boxes[b], 'red');
+    cls();
+    for (let i = 0; i < gridMaxX; i++) {
+        for (let j = 0; j < gridMaxY; j++) {
+            let element = grid[i][j];
+            if (element.column === playercoordinates.column && element.row === playercoordinates.row) {
+                fillBox(element, 'black');
+            }
+            if (element.column === foodcoordinates.column && element.row === foodcoordinates.row) {
+                fillBox(element, 'green');
+            }
+            if (element.column === foxcoordinates.column && element.row === foxcoordinates.row) {
+                fillBox(element, 'red');
+            }
         }
     }
 }

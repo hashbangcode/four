@@ -25,10 +25,7 @@ function userActionClick(box) {
   selectedBoxes.push(box);
 
   // Clear out the game grid and add the existing colours.
-  cls();
-  for (let i = 0; i < foundPairs.length; i++) {
-    fillBox(foundPairs[i], foundPairs[i].colour);
-  }
+
 
   if (selectedBoxes.length === 1) {
     // This is the first selection the user made, draw the colour.
@@ -47,10 +44,10 @@ function userActionClick(box) {
 
     fillBox(selectedBoxes[0], selectedBoxes[0].colour);
     fillBox(selectedBoxes[1], selectedBoxes[1].colour);
-
+    wait(500);
     selectedBoxes = [];
 
-    if (foundPairs.length === boxes.length) {
+    if (foundPairs.length === (gridMaxX * gridMaxY)) {
       win = true;
     }
   }
@@ -69,16 +66,18 @@ function randomiseColours() {
     'yellow',
   ];
 
-  colours = colours.slice(0, boxes.length / 2);
+  colours = colours.slice(0, (gridMaxX * gridMaxY) / 2);
   colours = colours.map(function (item) {
     return [item, item];
   }).reduce(function (a, b) { return a.concat(b) });
 
   shuffle(colours);
 
-  boxes.forEach(function (element) {
-    element.colour = colours.shift();
-  });
+  for (let i = 0; i < gridMaxX; i++) {
+    for (let j = 0; j < gridMaxY; j++) {
+      grid[i][j].colour = colours.shift();
+    }
+  }
 }
 
 
@@ -107,5 +106,12 @@ function update() {
 }
 
 function draw() {
+  cls();
+  for (let i = 0; i < foundPairs.length; i++) {
+    fillBox(foundPairs[i], foundPairs[i].colour);
+  }
+  for (let i = 0; i < selectedBoxes.length; i++) {
+    fillBox(selectedBoxes[i], selectedBoxes[i].colour);
+  }
 
 }
