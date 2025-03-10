@@ -1,13 +1,11 @@
-
 // Set up variables for the memory game.
-var win = false;
-var score = 0;
-var selectedBoxes = [];
-var foundPairs = [];
+let win = false;
+let selectedBoxes = [];
+let foundPairs = [];
 
 // Define a user action against a given box.
 function userActionClick(box) {
-  for (let i = 0; i < foundPairs.length; i++) {
+  for (let i = 0; i < foundPairs.length; i += 1) {
     if (box.colour === foundPairs[i].colour) {
       // Don't select already selected colours.
       return;
@@ -26,7 +24,6 @@ function userActionClick(box) {
 
   // Clear out the game grid and add the existing colours.
 
-
   if (selectedBoxes.length === 1) {
     // This is the first selection the user made, draw the colour.
     fillBox(selectedBoxes[0], selectedBoxes[0].colour);
@@ -35,7 +32,7 @@ function userActionClick(box) {
 
   if (selectedBoxes.length === 2) {
     // This is a full selection, so increase the score and find out if the colours match
-    score++;
+    score += 1;
 
     if (selectedBoxes[0].colour === selectedBoxes[1].colour) {
       foundPairs.push(selectedBoxes[0]);
@@ -67,19 +64,16 @@ function randomiseColours() {
   ];
 
   colours = colours.slice(0, (gridMaxX * gridMaxY) / 2);
-  colours = colours.map(function (item) {
-    return [item, item];
-  }).reduce(function (a, b) { return a.concat(b) });
+  colours = colours.map((item) => [item, item]).reduce((a, b) => a.concat(b));
 
   shuffle(colours);
 
-  for (let i = 0; i < gridMaxX; i++) {
-    for (let j = 0; j < gridMaxY; j++) {
+  for (let i = 0; i < gridMaxX; i += 1) {
+    for (let j = 0; j < gridMaxY; j += 1) {
       grid[i][j].colour = colours.shift();
     }
   }
 }
-
 
 function init() {
   randomiseColours();
@@ -107,11 +101,10 @@ function update() {
 
 function draw() {
   cls();
-  for (let i = 0; i < foundPairs.length; i++) {
+  for (let i = 0; i < foundPairs.length; i += 1) {
     fillBox(foundPairs[i], foundPairs[i].colour);
   }
-  for (let i = 0; i < selectedBoxes.length; i++) {
+  for (let i = 0; i < selectedBoxes.length; i += 1) {
     fillBox(selectedBoxes[i], selectedBoxes[i].colour);
   }
-
 }
