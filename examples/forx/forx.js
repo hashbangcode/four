@@ -55,21 +55,46 @@ function placePlayer() {
 
 function moveFox() {
   foxtimeout = setTimeout(moveFox, Math.max(2000 - (score * 100), 250));
+  let movement = [
+    function down(fox, player) {
+      if (fox.row < player.row) {
+        foxcoordinates.row += 1;
+        return true;
+      }
+      return false;
+    },
+    function up(foxcoordinates, playercoordinates) {
+      if (foxcoordinates.row > playercoordinates.row) {
+        foxcoordinates.row -= 1;
+        return true;
+      }
+      return false;
+    },
+    function right(foxcoordinates, playercoordinates) {
+      if (foxcoordinates.column < playercoordinates.column) {
+        foxcoordinates.column += 1;
+        return true;
+      }
+      return false;
+    },
+    function left(foxcoordinates, playercoordinates) {
+      if (foxcoordinates.column > playercoordinates.column) {
+        foxcoordinates.column -= 1;
+        return true;
+      }
+      return false;
+    },
+  ];
 
-  if (foxcoordinates.row < playercoordinates.row) {
-    foxcoordinates.row += 1;
-    return;
-  }
-  if (foxcoordinates.row > playercoordinates.row) {
-    foxcoordinates.row -= 1;
-    return;
-  }
-  if (foxcoordinates.column < playercoordinates.column) {
-    foxcoordinates.column += 1;
-    return;
-  }
-  if (foxcoordinates.column > playercoordinates.column) {
-    foxcoordinates.column -= 1;
+  shuffle(movement);
+
+  let moved = false;
+
+  for (i = 0; i < movement.length; i++) {
+    moved = movement[i](foxcoordinates, playercoordinates);
+    if (moved === true) {
+      return;
+    }
   }
 }
 
