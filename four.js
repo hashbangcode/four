@@ -7,18 +7,23 @@ let height;
 const gridMaxX = 4;
 const gridMaxY = 4;
 
+// The game grid.
 let grid = [];
 
+// The game loop timer ID.
 let gameloopId;
 
 // Define animation settings.
 let frameCounter = 0;
 let frames = [];
 
+// The current score.
 let score = 0;
 
+// The canvas context object.
 let ctx;
 
+// Constants for detecting directions.
 const KEYPRESS_UP = 'up';
 const KEYPRESS_DOWN = 'down';
 const KEYPRESS_LEFT = 'left';
@@ -114,6 +119,7 @@ function setupGrid() {
       };
     }
   }
+  return grid;
 }
 
 // Draw the grid.
@@ -185,6 +191,7 @@ function addClickListener() {
   canvas.addEventListener('click', canvasClick, false);
 }
 
+// Convert the keypress into directions and pass them upstream.
 function keyPress(evt) {
   if (typeof userActionKeyPress !== 'function') {
     return;
@@ -207,10 +214,12 @@ function keyPress(evt) {
   }
 }
 
+// Add an event listener for key down events.
 function addKeyListener() {
   document.addEventListener('keydown', keyPress, false);
 }
 
+// Remove the event listener for key down events.
 function removeKeyListener() {
   document.removeEventListener('keydown', keyPress, false);
 }
@@ -229,6 +238,38 @@ function shuffle(array) {
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex], array[currentIndex]];
   }
+}
+
+// Get a random element from the grid.
+function randomElement() {
+  const randomX = Math.floor(Math.random() * gridMaxX);
+  const randomY = Math.floor(Math.random() * gridMaxY);
+  return grid[randomX][randomY];
+}
+
+// Animate the score.
+function animateScore() {
+  cls();
+
+  if (frameCounter >= frames.length) {
+    frames = [];
+    flashGrid('black');
+    addKeyListener();
+    return;
+  }
+
+  for (let i = 0; i < frames[frameCounter].length; i += 1) {
+    for (let j = 0; j < frames[frameCounter][i].length; j += 1) {
+      if (frames[frameCounter][i][j] === 1) {
+        // Yes, we use j and i backwards here as we want to
+        // print the text scrolling across, rather than up.
+        fillBox(grid[j][i], 'black');
+      }
+    }
+  }
+
+  frameCounter += 1;
+  setTimeout(animateScore, 250);
 }
 
 // Display the score in the game grid.
@@ -268,40 +309,19 @@ function displayScore(passedScore) {
   setTimeout(animateScore, 250);
 }
 
-function randomElement() {
-  const randomX = Math.floor(Math.random() * gridMaxX);
-  const randomY = Math.floor(Math.random() * gridMaxY);
-  return grid[randomX][randomY];
-}
-
-// Animate the score.
-function animateScore() {
-  cls();
-
-  if (frameCounter >= frames.length) {
-    frames = [];
-    flashGrid('black');
-    addKeyListener();
-    return;
+// The game loop, where we define our custom functions.
+function gameLoop() {
+  if (frames.length === 0) {
+    draw();
+    update();
   }
 
-  for (let i = 0; i < frames[frameCounter].length; i += 1) {
-    for (let j = 0; j < frames[frameCounter][i].length; j += 1) {
-      if (frames[frameCounter][i][j] === 1) {
-        // Yes, we use j and i backwards here as we want to
-        // print the text scrolling across, rather than up.
-        fillBox(grid[j][i], 'black');
-      }
-    }
-  }
-
-  frameCounter += 1;
-  setTimeout(animateScore, 250);
+  drawGrid();
 }
 
-// Load in the canvas element and set up the game.
-window.onload = function fourWindowLoad() {
-  canvas = document.getElementById('four');
+// Initialise the canvas.
+function initCanvas(id) {
+  canvas = document.getElementById(id);
   ctx = canvas.getContext('2d');
 
   width = canvas.width;
@@ -318,19 +338,29 @@ window.onload = function fourWindowLoad() {
   }
 
   gameloopId = setInterval(gameLoop, 100);
-};
+}
 
+// Pause the game loop for a number of seconds and restart it.
 function wait(seconds) {
   clearInterval(gameloopId);
   gameloopId = setInterval(gameLoop, seconds);
 }
 
-// The game loop, where we define our custom functions.
-function gameLoop() {
-  if (frames.length === 0) {
-    draw();
-    update();
-  }
+// Get the canvas context object of the game grid. Used for testing.
+function getCanvasContextObject() {
+  return ctx;
+}
 
-  drawGrid();
+// Load in the canvas element and set up the game.
+window.onload = function fourWindowLoad() {
+  initCanvas('four');
+};
+
+if (typeof module === 'object') {
+  module.exports = {
+    getCanvasContextObject,
+    setupGrid,
+    drawGrid,
+    initCanvas,
+  };
 }

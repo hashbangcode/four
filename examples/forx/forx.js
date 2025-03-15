@@ -20,7 +20,7 @@ function placeFood() {
 }
 
 function placeFox(gamegrid) {
-  foxcoordinates - {};
+  foxcoordinates = {};
   while (typeof foxcoordinates.column === 'undefined') {
     const random = randomElement();
     if (random.column === playercoordinates.column && random.row === playercoordinates.row) {
@@ -63,22 +63,22 @@ function moveFox() {
       }
       return false;
     },
-    function up(foxcoordinates, playercoordinates) {
-      if (foxcoordinates.row > playercoordinates.row) {
+    function up(tmpfoxcoordinates, tmpplayercoordinates) {
+      if (tmpfoxcoordinates.row > tmpplayercoordinates.row) {
         foxcoordinates.row -= 1;
         return true;
       }
       return false;
     },
-    function right(foxcoordinates, playercoordinates) {
-      if (foxcoordinates.column < playercoordinates.column) {
+    function right(tmpfoxcoordinates, tmpplayercoordinates) {
+      if (tmpfoxcoordinates.column < tmpplayercoordinates.column) {
         foxcoordinates.column += 1;
         return true;
       }
       return false;
     },
-    function left(foxcoordinates, playercoordinates) {
-      if (foxcoordinates.column > playercoordinates.column) {
+    function left(tmpfoxcoordinates, tmpplayercoordinates) {
+      if (tmpfoxcoordinates.column > tmpplayercoordinates.column) {
         foxcoordinates.column -= 1;
         return true;
       }
