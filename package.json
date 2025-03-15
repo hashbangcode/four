@@ -1,17 +1,24 @@
 {
     "name": "four",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "A game engine based on a 4x4 grid.",
     "scripts": {
-      "eslint": "eslint .",
-      "eslint-fix": "eslint --fix ."
+        "eslint": "eslint .",
+        "eslint-fix": "eslint --fix .",
+        "test": "jest -i ./__test__/four.test.js"
     },
     "keywords": [],
     "author": "Philip Norton <philipnorton42@gmail.com>",
     "license": "MIT",
     "devDependencies": {
-      "eslint": "^8.34.0",
-      "eslint-config-airbnb-base": "^15.0.0",
-      "eslint-plugin-import": "^2.27.5"
+        "canvas": "^2.11.2",
+        "eslint": "^8.34.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.27.5",
+        "jest": "^29.7.0",
+        "jest-canvas-mock": "^2.5.2"
+    },
+    "dependencies": {
+        "jest-environment-jsdom": "^29.7.0"
     }
-  }
+}
