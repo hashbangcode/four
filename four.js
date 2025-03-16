@@ -112,8 +112,8 @@ function setupGrid() {
       grid[i][j] = {
         column: j,
         row: i,
-        x,
-        y,
+        x: x,
+        y: y,
         width: rectWidth,
         height: rectHeight,
       };
