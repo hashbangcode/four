@@ -31,10 +31,31 @@
 
     <h3>Getting running</h3>
 
-    <p>Include the four.js file into your html page.</p>
+    <p>Include the four.js file into your html page. This can be done by downloading and including the file into your script, or by using thie CDN link.</p>
     <code>&lt;script src=&quot;https://cdn.jsdelivr.net/gh/hashbangcode/four@main/four.js&quot;&gt;&lt;/script&gt;</code>
 
-    <p>Then, start writing out JavaScript code.</p>
+    <p>The whole game engine runs through this single file.</p>
+
+    <p>Then, start writing your JavaScript code. You'll need an update() and draw() function to update and draw the items in your game.</p>
+
+    <p>Here's a basic template of a game.</p>
+
+    <pre><code>function init() {
+  // Called once at the start of the game.
+  // Use this function to set things up.
+}
+
+function update() {
+  // Called at the end of the game loop.
+  // Use this function to update your game logic.
+}
+
+function draw() {
+  // Called at the start of the game loop.
+  // Use this function to draw items on the grid.
+}</code></pre>
+
+    <p>Other than drawing the boxes, everything else is taken care for you. The game loop update is performed for you.</p>
 
     <p>Get bonus points by naming the game using a pun based on the number four :)</p>
 
@@ -59,12 +80,12 @@
     <p>Run once when the game is setup. You can setup any varaibles that you need for the game to work here.</p>
 
     <h4>update()</h4>
-    <p>Add your game logic here.</p>
+    <p>This is called at the start of the game loop. Add your game logic here and update the elements in your game.</p>
 
     <h4>draw()</h4>
-    <p>Add your drawing functions here. This is where you go through your game logic and call <mark>fillBox()</mark> function.</p>
+    <p>Add your drawing functions here. This is where you go through your game logic and call <code>fillBox()</code> function to draw items in your game grid.</p>
 
-    <p>Note that there is nothing <em>technically</em> stopping you from writing drawing functions in the update() function, but the idea is that you separate concerns.</p>
+    <p>Note that there is nothing <em>technically</em> stopping you from writing drawing functions in the <code>update()</code> function, but the idea is that you separate concerns.</p>
 
     <h3>Functions</h3>
     <p>A number of additional functions exist for you to interact with your game.</p>
@@ -77,6 +98,50 @@
 
     <h4>wait(seconds)</h4>
     <p>Pause the execution of the game for a number of seconds.</p>
+
+    <h4>randomElement()</h4>
+    <p>Gets a random element from the grid.</p>
+
+    <h4>cls()</h4>
+    <p>Clear the entire game grid.</p>
+
+    <h3>Listening To User Actions</h3>
+
+    <p>A number of event functions are set up that can be used to perform actions on the grid.</p>
+
+    <h4>userActionClick(box)</h4>
+    <p>The <code>box</code> parameter here is the box object that was clicked on by the user.</p>
+
+    <h4>userActionKeyPress(direction)</h4>
+    <p>The direction will be one of 4 direction constants.</p>
+    <ul>
+      <li>KEYPRESS_LEFT</li>
+      <li>KEYPRESS_UP</li>
+      <li>KEYPRESS_RIGHT</li>
+      <li>KEYPRESS_DOWN</li>
+    </ul>
+    <p>It is common to use a switch statement to interpret these directions.</p>
+
+    <pre><code>function userActionKeyPress(direction) {
+  switch (direction) {
+    case KEYPRESS_LEFT:
+      // Left.
+      break;
+    case KEYPRESS_UP:
+      // Up.
+      break;
+    case KEYPRESS_RIGHT:
+      // Right.
+      break;
+    case KEYPRESS_DOWN:
+      // Down.
+      break;
+    default:
+      // Do nothing.
+      break;
+  }
+}</code></pre>
+
   </main>
 
   <footer>
