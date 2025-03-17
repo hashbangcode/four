@@ -104,16 +104,16 @@ function setupGrid() {
   for (let i = 0; i < gridMaxX; i += 1) {
     grid[i] = [];
     column = 0;
-    const y = i * (width / gridMaxY);
+    const yCoord = i * (width / gridMaxY);
     for (let j = 0; j < gridMaxY; j += 1) {
-      const x = j * (width / gridMaxY);
+      const xCoord = j * (width / gridMaxY);
       const rectWidth = width / gridMaxY;
       const rectHeight = height / gridMaxY;
       grid[i][j] = {
         column: j,
         row: i,
-        x: x,
-        y: y,
+        x: xCoord,
+        y: yCoord,
         width: rectWidth,
         height: rectHeight,
       };
@@ -196,17 +196,22 @@ function keyPress(evt) {
   if (typeof userActionKeyPress !== 'function') {
     return;
   }
+  evt.preventDefault();
   switch (evt.keyCode) {
-    case 37:
+    case 37: // Left arrow.
+    case 65: // "a".
       userActionKeyPress(KEYPRESS_LEFT);
       break;
-    case 38:
+    case 38: // Up arrow.
+    case 87: // "w".
       userActionKeyPress(KEYPRESS_UP);
       break;
-    case 39:
+    case 39: // Right arrow.
+    case 68: // "d".
       userActionKeyPress(KEYPRESS_RIGHT);
       break;
-    case 40:
+    case 40: // Down arrow.
+    case 83: // "s".
       userActionKeyPress(KEYPRESS_DOWN);
       break;
     default:
