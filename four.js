@@ -331,6 +331,13 @@ function gameLoop() {
 // Initialise the canvas.
 function initCanvas(id) {
   canvas = document.getElementById(id);
+  
+  canvas.style.cursor = 'crosshair';
+  canvas.style.background = 'white';
+  canvas.style.border = '2px solid black';
+  canvas.style.margin = '0 auto 0 auto';
+  canvas.style.display = 'flex';
+
   ctx = canvas.getContext('2d');
 
   width = canvas.width;
