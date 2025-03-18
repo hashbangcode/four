@@ -192,26 +192,30 @@ function addClickListener() {
 }
 
 // Convert the keypress into directions and pass them upstream.
-function keyPress(evt) {
+function keyPress(event) {
   if (typeof userActionKeyPress !== 'function') {
     return;
   }
-  evt.preventDefault();
-  switch (evt.keyCode) {
-    case 37: // Left arrow.
-    case 65: // "a".
+
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(event.code) > -1) {
+    event.preventDefault();
+  }
+  
+  switch (event.code) {
+    case 'ArrowLeft':
+    case 'KeyA':
       userActionKeyPress(KEYPRESS_LEFT);
       break;
-    case 38: // Up arrow.
-    case 87: // "w".
+    case 'ArrowUp':
+    case 'KeyW':
       userActionKeyPress(KEYPRESS_UP);
       break;
-    case 39: // Right arrow.
-    case 68: // "d".
+    case 'ArrowRight':
+    case 'KeyD':
       userActionKeyPress(KEYPRESS_RIGHT);
       break;
-    case 40: // Down arrow.
-    case 83: // "s".
+    case 'ArrowDown':
+    case 'KeyS':
       userActionKeyPress(KEYPRESS_DOWN);
       break;
     default:
