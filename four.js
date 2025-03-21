@@ -200,7 +200,7 @@ function keyPress(event) {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(event.code) > -1) {
     event.preventDefault();
   }
-  
+
   switch (event.code) {
     case 'ArrowLeft':
     case 'KeyA':
@@ -247,6 +247,11 @@ function shuffle(array) {
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex], array[currentIndex]];
   }
+}
+
+// Generate a random number between two values.
+function randomRange(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 // Get a random element from the grid.
