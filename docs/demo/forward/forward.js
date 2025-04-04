@@ -1,7 +1,8 @@
 // Set up variables for the forward game.
 let loose = false;
 let playercoordinates = {};
-let wallTimeout;
+const defaultMovementInterval = 60;
+let moveInterval = defaultMovementInterval;
 
 const shapes = [];
 shapes[0] = [
@@ -34,7 +35,6 @@ let wall = [];
 let wallCoordinates;
 
 function moveWall() {
-  wallTimeout = setTimeout(moveWall, Math.max(1000 - (score * 100), 250));
   if (wallIsActive) {
     if (wallCoordinates === -1) {
       wallIsActive = false;
@@ -52,9 +52,6 @@ function moveWall() {
 
 function placePlayer() {
   playercoordinates = { column: 0, row: 2 };
-  if (typeof wallTimeout !== 'number') {
-    wallTimeout = setTimeout(moveWall, 1000);
-  }
 }
 
 function userActionKeyPress(direction) {
@@ -69,6 +66,9 @@ function userActionKeyPress(direction) {
         playercoordinates.row += 1;
       }
       break;
+    default:
+      // Do nothing.
+      break;
   }
 }
 
@@ -76,7 +76,7 @@ function init() {
   placePlayer();
 }
 
-function update() {
+function update(delta) {
   if (loose === true) {
     // Crashed!
     // Flush the screen.
@@ -85,6 +85,12 @@ function update() {
     displayScore(score);
     // Reset some variables.
     score = 0;
+    moveInterval = defaultMovementInterval;
+
+    wallIsActive = false;
+    wall = [];
+    wallCoordinates = 0;
+
     // Set the game up again.
     placePlayer();
 
@@ -93,13 +99,21 @@ function update() {
     return;
   }
 
+  moveInterval -= (delta * 60);
+
+  if (moveInterval <= 0) {
+    moveWall();
+    moveInterval = Math.max(5, defaultMovementInterval - score);
+  }
+
+  // Check loose state.
   for (let i = 0; i < gridMaxX; i += 1) {
     for (let j = 0; j < gridMaxY; j += 1) {
       const element = grid[i][j];
       if (element.column === wallCoordinates) {
         for (let wallpart = 0; wallpart < wall.length; wallpart += 1) {
           if (wall[wallpart] === 1 && element.row === wallpart) {
-            if (element.column === playercoordinates.column 
+            if (element.column === playercoordinates.column
                 && element.row === playercoordinates.row) {
               loose = true;
               return;
@@ -111,7 +125,7 @@ function update() {
   }
 }
 
-function draw() {
+function draw(delta) {
   cls();
 
   for (let i = 0; i < gridMaxX; i += 1) {

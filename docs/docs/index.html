@@ -79,11 +79,23 @@ function draw() {
     <h4>init()</h4>
     <p>Run once when the game is setup. You can setup any varaibles that you need for the game to work here.</p>
 
-    <h4>update()</h4>
+    <h4>update(delta)</h4>
     <p>This is called at the start of the game loop. Add your game logic here and update the elements in your game.</p>
+    
+    <p>The <code>delta</code> parameter can be used to synchronise the update calls with the current frame. Although the function is
+      called every 60th of a second there will be a small discrepency between one call and the next, which can be
+      corrected by using the delta parameter. The delta shows the difference in time between one call and the next.</p>
 
-    <h4>draw()</h4>
+    <p>One way to calcualte the difference between two frames is to multiply the delta value by 60.</p>
+  
+    <pre><code>interval = (delta * 60);</code></pre>
+
+    <p>Since we are running at 60 frames a second, and the delta will be a float value, the caluclated value
+    1, plus the difference between one frame and the next.</p>
+
+    <h4>draw(delta)</h4>
     <p>Add your drawing functions here. This is where you go through your game logic and call <code>fillBox()</code> function to draw items in your game grid.</p>
+    <p>The delta parameter works in the same way as the parameter in the update function.</p>
 
     <p>Note that there is nothing <em>technically</em> stopping you from writing drawing functions in the <code>update()</code> function, but the idea is that you separate concerns.</p>
 
@@ -146,6 +158,14 @@ function draw() {
 }</code></pre>
 
   </main>
+
+  <h4>addClickListener()/removeClickListener()</h4>
+  <p>Add or remove the click listener event from the canvas. Using these methods
+    we can enable or disable the mouse interactivity.</p>
+
+  <h4>addKeyListener()/removeKeyListener()</h4>
+  <p>Add or remove the key listener event from the canvas. Using these methods
+    we can enable or disable the keyboard interactivity.</p>
 
   <footer>
     <p>Four was created by <a href="https://www.hashbangcode.com">#! code</a> and is licensed under the MIT
