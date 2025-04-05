@@ -2,8 +2,10 @@
 let loose = false;
 let snake = [];
 let foodcoordinates = {};
-let snakeMoveTimeout;
 let snakeDirection;
+
+const defaultMovementInterval = 60;
+let moveInterval = defaultMovementInterval;
 
 const SNAKE_UP = 'up';
 const SNAKE_DOWN = 'down';
@@ -30,16 +32,13 @@ function placeFood() {
 }
 
 function moveSnake() {
-  snakeMoveTimeout = setTimeout(moveSnake, Math.max(2000 - (score * 100), 250));
-
   const head = structuredClone(snake[0]);
 
   switch (snakeDirection) {
     case SNAKE_LEFT:
       if (snake[0].column >= 1) {
         head.column -= 1;
-      }
-      else {
+      } else {
         loose = true;
       }
       break;
@@ -96,9 +95,6 @@ function placeSnake() {
 
     snake.push({ column: random.column, row: random.row });
   }
-  if (typeof snakeMoveTimeout !== 'number') {
-    snakeMoveTimeout = setTimeout(moveSnake, 100);
-  }
 }
 
 function userActionKeyPress(direction) {
@@ -122,11 +118,11 @@ function userActionKeyPress(direction) {
 }
 
 function init() {
-    placeSnake();
-    placeFood();
+  placeSnake();
+  placeFood();
 }
 
-function update() {
+function update(delta) {
   if (loose === true) {
     // We have a winner!
     // flush the screen.
@@ -137,6 +133,7 @@ function update() {
     score = 0;
     snake = [];
     snakeDirection = undefined;
+    moveInterval = defaultMovementInterval;
 
     // Reset the game grid.
     placeSnake();
@@ -144,6 +141,13 @@ function update() {
 
     // Turn off the win state.
     loose = false;
+  }
+
+  moveInterval -= (delta * 60);
+
+  if (moveInterval <= 0) {
+    moveSnake();
+    moveInterval = Math.max(5, defaultMovementInterval - score);
   }
 }
 

@@ -3,6 +3,12 @@ let loose = false;
 let greenSpots = [];
 let redSpots = [];
 
+const defaultDecayInterval = 60;
+let decayInterval = defaultDecayInterval;
+
+const defaultPlaceInterval = 60;
+let placeInterval = defaultDecayInterval;
+
 function placeGreen() {
   if (greenSpots.length > score) {
     return;
@@ -23,7 +29,7 @@ function placeGreen() {
         continue placeGreenLoop;
       }
     }
-    const randomHealth = randomRange(15, 50);
+    const randomHealth = randomRange(1, 15);
     greencoordinates = { column: random.column, row: random.row, health: randomHealth };
   }
   greenSpots.push(greencoordinates);
@@ -49,7 +55,7 @@ function placeRed() {
         continue placeRedLoop;
       }
     }
-    const randomHealth = randomRange(25, 50);
+    const randomHealth = randomRange(2, 20);
     redcoordinates = { column: random.column, row: random.row, health: randomHealth };
   }
   redSpots.push(redcoordinates);
@@ -90,7 +96,7 @@ function init() {
   placeRed();
 }
 
-function update() {
+function update(delta) {
   if (loose === true) {
     // Crashed!
     // Flush the screen.
@@ -103,6 +109,9 @@ function update() {
     greenSpots = [];
     redSpots = [];
 
+    decayInterval = defaultDecayInterval;
+    placeInterval = defaultPlaceInterval;
+
     placeGreen();
     placeRed();
 
@@ -111,18 +120,27 @@ function update() {
     return;
   }
 
-  // Randomly place a counter.
-  let actions = [
-    placeGreen,
-    placeRed,
-  ];
-  shuffle(actions);
-  actions[0]();
+  decayInterval -= (delta * 60);
 
-  decreaseHealth();
+  if (decayInterval <= 0) {
+    decreaseHealth();
+    decayInterval = Math.max(5, defaultDecayInterval - score);
+  }
+
+  placeInterval -= (1 + delta);
+  if (placeInterval <= 0) {
+    // Randomly place a counter.
+    let actions = [
+      placeGreen,
+      placeRed,
+    ];
+    shuffle(actions);
+    actions[0]();
+    placeInterval = Math.max(5, defaultPlaceInterval - score);
+  }
 }
 
-function draw() {
+function draw(delta) {
   cls();
   for (let i = 0; i < gridMaxX; i += 1) {
     for (let j = 0; j < gridMaxY; j += 1) {

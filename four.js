@@ -23,6 +23,11 @@ let score = 0;
 // The canvas context object.
 let ctx;
 
+// Set up delta times.
+let lastUpdate = Date.now();
+const updateLoopsPerSecond = 1000 / 60;
+let delta = 0;
+
 // Constants for detecting directions.
 const KEYPRESS_UP = 'up';
 const KEYPRESS_DOWN = 'down';
@@ -153,10 +158,13 @@ function flashGrid(colour) {
   ctx.beginPath();
   ctx.fillStyle = colour;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  // After 50 milliseconds, clear the screen and re-draw the grid.
+  // After some milliseconds, clear the screen and re-draw the grid.
+  clearInterval(gameloopId);
   setTimeout(() => {
     cls();
-  }, 50);
+    lastUpdate = Date.now();
+    gameloopId = setInterval(gameLoop, updateLoopsPerSecond);
+  }, 250);
 }
 
 // Handle the canvas click event and pass onto a custom handle function
@@ -186,9 +194,14 @@ function canvasClick(event) {
   return false;
 }
 
-// Add event listener for `click` events.
+// Add event listener for mouse click events.
 function addClickListener() {
   canvas.addEventListener('click', canvasClick, false);
+}
+
+// Remove the event listener for mouse click events.
+function removeClickListener() {
+  canvas.removeEventListener('click', canvasClick, false);
 }
 
 // Convert the keypress into directions and pass them upstream.
@@ -261,14 +274,16 @@ function randomElement() {
   return grid[randomX][randomY];
 }
 
-// Animate the score.
+// Internal function used to animate the score.
 function animateScore() {
   cls();
 
   if (frameCounter >= frames.length) {
+    // Finished animating.
     frames = [];
     flashGrid('black');
     addKeyListener();
+    addClickListener();
     return;
   }
 
@@ -289,6 +304,9 @@ function animateScore() {
 // Display the score in the game grid.
 function displayScore(passedScore) {
   removeKeyListener();
+  removeClickListener();
+
+  // Function to find the colomn from the grid.
   const arrayColumn = (arr, n) => arr.map((x) => x[n]);
 
   // Convert score into a string and add start and end buffers.
@@ -325,9 +343,14 @@ function displayScore(passedScore) {
 
 // The game loop, where we define our custom functions.
 function gameLoop() {
+  // Frames having length means that our animation is running.
   if (frames.length === 0) {
-    draw();
-    update();
+    let now = Date.now();
+    delta = (now - lastUpdate) / 1000;
+    lastUpdate = now;
+
+    draw(delta);
+    update(delta);
   }
 
   drawGrid();
@@ -336,7 +359,7 @@ function gameLoop() {
 // Initialise the canvas.
 function initCanvas(id) {
   canvas = document.getElementById(id);
-  
+
   canvas.style.cursor = 'crosshair';
   canvas.style.background = 'white';
   canvas.style.border = '2px solid black';
@@ -358,13 +381,17 @@ function initCanvas(id) {
     init();
   }
 
-  gameloopId = setInterval(gameLoop, 100);
+  gameloopId = setInterval(gameLoop, updateLoopsPerSecond);
 }
 
 // Pause the game loop for a number of seconds and restart it.
 function wait(seconds) {
   clearInterval(gameloopId);
-  gameloopId = setInterval(gameLoop, seconds);
+
+  setTimeout(() => {
+    lastUpdate = Date.now();
+    gameloopId = setInterval(gameLoop, updateLoopsPerSecond);
+  }, seconds);
 }
 
 // Get the canvas context object of the game grid. Used for testing.

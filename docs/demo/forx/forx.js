@@ -1,9 +1,10 @@
 // Set up variables for the fox game.
 let loose = false;
-let foxtimeout;
 let playercoordinates = {};
 let foodcoordinates = {};
 let foxcoordinates = {};
+const foxMovementInterval = 90;
+let moveInterval = foxMovementInterval;
 
 function placeFood() {
   foodcoordinates = {};
@@ -54,7 +55,6 @@ function placePlayer() {
 }
 
 function moveFox() {
-  foxtimeout = setTimeout(moveFox, Math.max(2000 - (score * 100), 250));
   let movement = [
     function down(fox, player) {
       if (fox.row < player.row) {
@@ -124,9 +124,6 @@ function userActionKeyPress(direction) {
       // Do nothing.
       break;
   }
-  if (typeof foxtimeout !== 'number') {
-    foxtimeout = setTimeout(moveFox, 2000);
-  }
 }
 
 function init() {
@@ -138,9 +135,6 @@ function init() {
 function update() {
   if (loose === true) {
     // Crashed!
-    // Reset the fox timeout.
-    clearTimeout(foxtimeout);
-    foxtimeout = undefined;
 
     // Flush the screen.
     cls();
@@ -148,6 +142,7 @@ function update() {
     displayScore(score);
     // Reset some variables.
     score = 0;
+    moveInterval = foxMovementInterval;
 
     placePlayer();
     placeFood();
@@ -156,6 +151,13 @@ function update() {
     // Turn off the win state.
     loose = false;
     return;
+  }
+
+  moveInterval -= (delta * 60);
+
+  if (moveInterval <= 0) {
+    moveFox();
+    moveInterval = Math.max(5, foxMovementInterval - (score * 2));
   }
 
   if (foxcoordinates.column === playercoordinates.column
